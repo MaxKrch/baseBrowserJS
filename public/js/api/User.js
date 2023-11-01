@@ -4,11 +4,15 @@
  * Имеет свойство URL, равное '/user'.
  * */
 class User {
+
+  static URL = '/user'
   /**
    * Устанавливает текущего пользователя в
    * локальном хранилище.
    * */
   static setCurrent(user) {
+    const currentUser = JSON.stringify(user);
+    localStorage.setItem('user', currentUser); 
 
   }
 
@@ -17,6 +21,7 @@ class User {
    * пользователе из локального хранилища.
    * */
   static unsetCurrent() {
+    localStorage.removeItem('user');
 
   }
 
@@ -25,7 +30,14 @@ class User {
    * из локального хранилища
    * */
   static current() {
+    let currentUser;
+    const userFromLocalStorage = localStorage.getItem('user');
+   
+    if(userFromLocalStorage) {
+      currentUser = JSON.parse(userFromLocalStorage)
+    }
 
+    return currentUser;
   }
 
   /**
@@ -33,6 +45,21 @@ class User {
    * авторизованном пользователе.
    * */
   static fetch(callback) {
+    const newCallback = (error, response) => {
+        if(response.success === true) {
+          this.setCurrent(response.user);
+        } else {
+          this.unsetCurrent();
+        }
+         callback(error, response)
+      } 
+ 
+    createRequest({
+      url: this.URL + '/current',
+      method: 'GET',
+      data: {},
+      callback: newCallback
+    })
 
   }
 
@@ -48,11 +75,11 @@ class User {
       method: 'POST',
       responseType: 'json',
       data,
-      callback: (err, response) => {
+      callback: (error, response) => {
         if (response && response.user) {
           this.setCurrent(response.user);
         }
-        callback(err, response);
+        callback(error, response);
       }
     });
   }
@@ -64,6 +91,22 @@ class User {
    * User.setCurrent.
    * */
   static register(data, callback) {
+    const url = this.URL + '/register';
+    const method = 'POST';
+    const newCallback = (error, response) => {
+      if(response.success === true) {
+        this.setCurrent(response.user)
+      }
+      callback(error, response) 
+
+    }
+
+    createRequest({
+      url,
+      method,
+      data,
+      callback: newCallback,
+    })
 
   }
 
@@ -72,6 +115,21 @@ class User {
    * выхода необходимо вызвать метод User.unsetCurrent
    * */
   static logout(callback) {
+    const url = this.URL + '/logout';
+    const method = 'POST';
+    const data = {};
+    const newCallback = (error, response) => {
+      if(response.success === true) {
+        this.unsetCurrent()
+      }
+      callback(error, response)
+    }
 
+    createRequest({
+      url,
+      method,
+      data,
+      callback: newCallback,
+    })
   }
 }
