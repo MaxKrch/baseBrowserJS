@@ -4,6 +4,6 @@
  * Имеет свойство URL со значением '/transaction'
  * */
 class Transaction extends Entity {
-	static URl = '/transaction';
+	static URL = '/transaction';
 }
 

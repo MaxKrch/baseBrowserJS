@@ -11,7 +11,11 @@ class User {
    * локальном хранилище.
    * */
   static setCurrent(user) {
-    const currentUser = JSON.stringify(user);
+    const newUser = {
+      id: user.id,
+      name: user.name,
+    }
+    const currentUser = JSON.stringify(newUser);
     localStorage.setItem('user', currentUser); 
 
   }

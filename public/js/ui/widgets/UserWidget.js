@@ -12,6 +12,10 @@ class UserWidget {
    * необходимо выкинуть ошибку.
    * */
   constructor(element){
+    this.element = element;
+    if(!this.element) {
+      throw new Error('Нет активного пользователя');
+    }
 
   }
 
@@ -23,6 +27,12 @@ class UserWidget {
    * авторизованного пользователя
    * */
   update(){
+    const user = User.current();
+
+    if(user) {
+      const nameWrap = document.querySelector('.user-name');
+      nameWrap.textContent = user.name;
+    }
 
   }
 }
